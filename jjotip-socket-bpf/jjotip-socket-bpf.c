@@ -69,6 +69,7 @@ int main(void) {
 		printf("n=%d str=%s\n",n, buf);
 	}
 
+	return 0;
 }
 /* See:
 	tcpdump -d <filtro> ; tcpdump -dd <filtro>
