@@ -72,5 +72,5 @@ int main(void) {
 /* See:
 	tcpdump -d <filtro> ; tcpdump -dd <filtro>
 	/usr/include/pcap-bpf.h
-	http://www.gsp.com/cgi-bin/man.cgi?section=4&topic=bpfi
+	http://www.gsp.com/cgi-bin/man.cgi?section=4&topic=bpf
  */
