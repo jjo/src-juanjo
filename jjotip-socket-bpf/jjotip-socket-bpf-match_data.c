@@ -98,6 +98,7 @@ int main(int argc, const char *argv[]) {
 	while (1) {
 		memset(buf, 0, sizeof(buf));
 		n = recvfrom(sock,buf,sizeof(buf),0,NULL,NULL);
+		if (n<=0) break;
 		printf("READ n=%d str=%s\n",n, buf);
 	}
 	return 0;
