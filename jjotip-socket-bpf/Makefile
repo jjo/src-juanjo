@@ -1,5 +1,5 @@
 CFLAGS=-Wall -g
-T=jjotip-socket-bpf
+T=jjotip-socket-bpf jjotip-socket-bpf-match_data
 
 all: $(T)
 clean:
