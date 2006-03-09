@@ -2,7 +2,7 @@
 # Author: JuanJo Ciarlante <jjo-nospam@mendoza.gov.ar>
 # License: GPLv2+
 #
-# $Id: htb-stats.sh,v 1.21 2006/03/08 15:53:33 jjo Exp $
+# $Id: htb-stats.sh,v 1.22 2006/03/09 01:11:36 jjo Exp $
 #
 # Quick htb stats script: parses "tc -s class show ..." output
 # plus: tries to label major:minor classid from 
@@ -15,6 +15,7 @@
 #
 DEV=${1:-eth0}
 : ${TCNG_CONF:=/etc/sysconfig/tcng-configs/global.tcc}
+: ${HTB_INIT_DIR:=/etc/sysconfig/htb}
 : ${TC_BIN:=tc}
 PRINT_FMT="%-14s %4s %10s %10s %10s %-18s %s\n"
 
@@ -73,6 +74,7 @@ tcng_load_DICT() {
 #   from /etc/sysconfig/htb/ filenames
 htb_load_DICT() {
 	MAJOR=1  ## hardcoded in htb.init AFAIK
+	test -d ${HTB_INIT_DIR} || return 1
 	local aux filename minor label
 	while read filename;do
 		### get minor,label from filename as: DEV-n1:n2:...:minor.label 
@@ -83,7 +85,7 @@ htb_load_DICT() {
 		eval "DICT_label_class_${DEV}_${MAJOR}_${minor}_X=\"$label\""
 		eval "DICT_filename_class_${DEV}_${MAJOR}_${minor}_X=\"$filename\""
 	done < \
-	<(cd /etc/sysconfig/htb && ls $DEV*[:-]* 2>/dev/null)
+	<(cd ${HTB_INIT_DIR} && ls $DEV*[:-]* 2>/dev/null)
 }
 #
 # to_kbits: Convert passed rate to kbits
@@ -146,12 +148,18 @@ do_stat() {
   <(${TC_BIN} -s class show dev $DEV)
 }
 
-tcng_load_DICT || htb_load_DICT
+tcng_load_DICT || htb_load_DICT || {
+	echo "ERROR: No $TCNG_CONF (tcng) neither $HTB_INIT_DIR (htb) found."
+	exit 1
+}
 printf "$PRINT_FMT" "CLASSID" "q." "rate" "RATE" "MAX" "LABEL" ""
 do_stat | sort | sed -e 's/^0/ /'  -e 's/>0/> /' 
 
 #
 # $Log: htb-stats.sh,v $
+# Revision 1.22  2006/03/09 01:11:36  jjo
+# . do error if not tcng or htb config. found
+#
 # Revision 1.21  2006/03/08 15:53:33  jjo
 # . docs, some func renames
 #
