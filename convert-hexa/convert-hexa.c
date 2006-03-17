@@ -1,13 +1,11 @@
 /* 
- * convert-hexa: converts from hexa digits to buffer w/o library functions (example program)
+ * convert-hexa: converts from hexa digits to buffer
  *
  * Author: Juanjo Ciarlante,  jjo (.) mendoza.gov.ar
  * License: GPLv2+
  */
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
-
 
 static char str_from_hexa[256];
 
