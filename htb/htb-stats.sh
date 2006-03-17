@@ -2,7 +2,7 @@
 # Author: JuanJo Ciarlante <jjo-nospam@mendoza.gov.ar>
 # License: GPLv2+
 #
-# $Id: htb-stats.sh,v 1.22 2006/03/09 01:11:36 jjo Exp $
+# $Id: htb-stats.sh,v 1.24 2006/03/13 15:16:17 jjo Exp $
 #
 # Quick htb stats script: parses "tc -s class show ..." output
 # plus: tries to label major:minor classid from 
@@ -16,8 +16,13 @@
 DEV=${1:-eth0}
 : ${TCNG_CONF:=/etc/sysconfig/tcng-configs/global.tcc}
 : ${HTB_INIT_DIR:=/etc/sysconfig/htb}
+: ${HTBGEN_BIN:=htb-gen}
 : ${TC_BIN:=tc}
-PRINT_FMT="%-14s %4s %10s %10s %10s %-18s %s\n"
+PRINT_FMT="%-16s %4s %10s %10s %10s %-18s %s\n"
+
+BITS_PER_bit=1 ### heavy units bug, eg. Centos-4.2
+
+case "$(ip -V)" in *iproute2-ss040831) BITS_PER_bit=8;;esac
 
 #
 #   tcng support:
@@ -87,6 +92,31 @@ htb_load_DICT() {
 	done < \
 	<(cd ${HTB_INIT_DIR} && ls $DEV*[:-]* 2>/dev/null)
 }
+# htbgen_load_DICT: 
+#   Create assoc array: DICT_label_class_${DEV}_${classid}_X
+#   from "htb-gen loadvars" command (http://freshmeat.net/projects/htb-gen) 
+htbgen_load_DICT() {
+	SORT_MODE="-t: -n -k3"
+	MAJOR=1  ## hardcoded in htb-gen [^AFA]IK 
+	test -x $(which ${HTBGEN_BIN}) || return 1
+	source ${HTBGEN_BIN} loadvars
+	case "${DEV}" in 
+	${iface_down})
+		for ((n=0;n<${#ip[@]};n++)); do
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_down[n]}_X=\"${ip[n]}\""
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_prio_down[n]}_X=\"${ip[n]}.prio\""
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_dfl_down[n]}_X=\"${ip[n]}.dfl\""
+		done
+	;;
+	${iface_up})	
+		for ((n=0;n<${#ip[@]};n++)); do
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_up[n]}_X=\"${ip[n]}\""
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_prio_up[n]}_X=\"${ip[n]}.prio\""
+			eval "DICT_label_class_${DEV}_${MAJOR}_${class_dfl_up[n]}_X=\"${ip[n]}.dfl\""
+		done
+	;;
+	esac
+}
 #
 # to_kbits: Convert passed rate to kbits
 #
@@ -98,7 +128,7 @@ to_kbits() {
 	case "$1" in
 	*bps) RET_to_kbits="$((${1%bps}*8/1000))kbps";;
 	*Kbit) RET_to_kbits="$((${1%Kbit}*1024/1000))kbps";;	# units mess (?)
-	*[0-9]bit) RET_to_kbits="$((${1%bit}/1000))kbps";;
+	*[0-9]bit) RET_to_kbits="$((${1%bit}*${BITS_PER_bit}/1000))kbps";;
 	__*Kbit) RET_to_kbits="$1";;	# else: eg. "Kbit" is returned as-is
 	*) RET_to_kbits="$1";;	# as-is
 	esac
@@ -148,15 +178,21 @@ do_stat() {
   <(${TC_BIN} -s class show dev $DEV)
 }
 
-tcng_load_DICT || htb_load_DICT || {
-	echo "ERROR: No $TCNG_CONF (tcng) neither $HTB_INIT_DIR (htb) found."
+tcng_load_DICT || htb_load_DICT || htbgen_load_DICT || {
+	echo "ERROR: No $TCNG_CONF (tcng) neither $HTB_INIT_DIR (htb) neither ${HTBGEN_BIN} (htb-gen) found."
 	exit 1
 }
 printf "$PRINT_FMT" "CLASSID" "q." "rate" "RATE" "MAX" "LABEL" ""
-do_stat | sort | sed -e 's/^0/ /'  -e 's/>0/> /' 
+do_stat | sort ${SORT_MODE} | sed -e 's/^0/ /'  -e 's/>0/> /' 
 
 #
 # $Log: htb-stats.sh,v $
+# Revision 1.24  2006/03/13 15:16:17  jjo
+# . htb-gen (http://freshmeat.net/projects/htb-gen) support, tnks Luciano!
+#
+# Revision 1.23  2006/03/13 14:37:27  jjo
+# . workaround heavy tc units bug for Centos-4.2 where textual "bits" are actually "bytes"
+#
 # Revision 1.22  2006/03/09 01:11:36  jjo
 # . do error if not tcng or htb config. found
 #
