@@ -26,11 +26,13 @@ TABLE2=dmsetup-snap.table
 #ME_GUSTA_LA_ADENALINA="--noopencount"
 #
 
+set -e
 ORIG_SIZE=$(blockdev --getsize $ORIG_DEV)
 SNAP_DEV=$(losetup -f) #1er loop dev sin uso
 #
-modprobe dm-mod || exit 1
-which dmsetup || exit 1
+modprobe dm-mod
+which dmsetup
+set +e
 # Construye las tablas para dmsetup
 echo "Creando $TABLE1 y $TABLE2"
 echo 0 $ORIG_SIZE linear $ORIG_DEV 0 > $TABLE1
