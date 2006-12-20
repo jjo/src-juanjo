@@ -20,6 +20,7 @@
 
  	./mproc-mutex foo i   #initialize "foo" mutex, will be /dev/shm/foo
  	./mproc-mutex foo l   #lock; call it twice to see it "working"
+ 	./mproc-mutex foo l   #lock again: will wait until unlock or signalled
  	./mproc-mutex foo u   #unlock 
 	rm /dev/shm/foo    #remove it
  */ 
