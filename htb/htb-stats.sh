@@ -2,7 +2,7 @@
 # Author: JuanJo Ciarlante <jjo-nospam@mendoza.gov.ar>
 # License: GPLv2+
 #
-# $Id: htb-stats.sh,v 1.24 2006/03/13 15:16:17 jjo Exp $
+# $Id: htb-stats.sh,v 1.25 2006/03/20 14:50:20 jjo Exp $
 #
 # Quick htb stats script: parses "tc -s class show ..." output
 # plus: tries to label major:minor classid from 
@@ -98,7 +98,7 @@ htb_load_DICT() {
 htbgen_load_DICT() {
 	SORT_MODE="-t: -n -k3"
 	MAJOR=1  ## hardcoded in htb-gen [^AFA]IK 
-	test -x $(which ${HTBGEN_BIN}) || return 1
+	test -x "$(which ${HTBGEN_BIN})" || return 1
 	source ${HTBGEN_BIN} loadvars
 	case "${DEV}" in 
 	${iface_down})
@@ -159,7 +159,14 @@ do_stat() {
 				to_kbits "$confrate";confrate="$RET_to_kbits"
 				continue;;
 	rate-*-*) 
-			test "$4" = "backlog" && backlog="$5"
+			#consider tc's output
+			# backlog 123p    or  <none>   #classic
+			# backlog 0b 123p              #new - 2006
+			if [ "$4" = "backlog" ];then
+				backlog="$5"
+				test "$backlog" = "0b" && backlog="$6"
+				test "$backlog" = "0p" && backlog=""
+			fi
 			rate=$2
 			continue
 			;;
@@ -179,14 +186,17 @@ do_stat() {
 }
 
 tcng_load_DICT || htb_load_DICT || htbgen_load_DICT || {
-	echo "ERROR: No $TCNG_CONF (tcng) neither $HTB_INIT_DIR (htb) neither ${HTBGEN_BIN} (htb-gen) found."
-	exit 1
+	echo "WARN: No $TCNG_CONF (tcng) neither $HTB_INIT_DIR (htb) neither ${HTBGEN_BIN} (htb-gen) found." >&2
+	#exit 1
 }
 printf "$PRINT_FMT" "CLASSID" "q." "rate" "RATE" "MAX" "LABEL" ""
 do_stat | sort ${SORT_MODE} | sed -e 's/^0/ /'  -e 's/>0/> /' 
 
 #
 # $Log: htb-stats.sh,v $
+# Revision 1.25  2006/03/20 14:50:20  jjo
+# support label-less , adapt to newer tc's backlog output
+#
 # Revision 1.24  2006/03/13 15:16:17  jjo
 # . htb-gen (http://freshmeat.net/projects/htb-gen) support, tnks Luciano!
 #
