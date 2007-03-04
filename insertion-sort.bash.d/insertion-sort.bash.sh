@@ -1,6 +1,7 @@
 #!/bin/bash
 # insertion-sort.bash.sh: Insertion sort implementation in bash
 #                         Heavy use of bash array features: slicing, merging, etc
+# URL: http://www.lugmen.org.ar/~jjo/jjotip/insertion-sort.bash.d/insertion-sort.bash.sh
 #
 # Author: JuanJo Ciarlante <jjo@irrigacion.gov.ar>
 # License: GPLv2
