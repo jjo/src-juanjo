@@ -1,10 +1,14 @@
 #!/bin/bash
+### Author: JuanJo Ciarlante - jjo O mendoza gov ar
 ### usage: 
-###    ipv6-setup6to4.sh
-###    ipv6-setup6to4.sh auto            #same as above
-###    ipv6-setup6to4.sh auto eth0=1::1  #also setup eth0 with $IP6TO4_PREF:1::1
-###    ipv6-setup6to4.sh auto eth0=1::1  wlan0=2::1
+###    ipv6-setup6to4.sh                      #just show
+###    ipv6-setup6to4.sh       | sudo sh -x   #do it by pipeing to "sh"     
+###    ipv6-setup6to4.sh auto  | sudo sh -x               #same as above
+###    ipv6-setup6to4.sh auto eth0=1::1/64 | sudo sh -x   #also setup eth0 with $IP6TO4_PREF:1::1/64
+###    ipv6-setup6to4.sh auto eth0=1::1/64  wlan0=2::1/64 | sudo sh -x
+###    ipv6-setup6to4.sh -r ...               #reverse the commands (eg: add -> del, etc)
 export PATH="/sbin:/usr/sbin:$PATH"
+test "$1" = "-r" && { shift;$0 "$@" | tac | sed -re 's/\badd\b/del/' -e 's/\bup\b/down/'; exit $?; }
 IP4_ADDR="${1:-auto}"
 shift
 IFACE_IP6NODE="$2" # eg:  "eth0=1::1"
@@ -23,12 +27,12 @@ IP6TO4_PREF=$(echo $IP4_ADDR | awk -v "FS=[.]" ' { printf ("2002:%x%02x:%x%02x",
 ip() {
 	echo ip "$@"
 }
-### Setup the tunnel
+### Print to stdout the commands to setup the tunnel:
 echo "IP4_ADDR=$IP4_ADDR"
 echo "IP6TO4_PREF=$IP6TO4_PREF"
 echo "#check you allow ipv6 encap: iptables -I INPUT -p 41 -d $IP4_ADDR" 
-ip tunnel del tun6to4
 ip tunnel add tun6to4 mode sit remote any local $IP4_ADDR ttl 64
+ip addr flush dev tun6to4 2\>/dev/null
 ip link set dev tun6to4 up
 ip addr add $IP6TO4_PREF::1/16 dev tun6to4
 ip route add ::/96 dev tun6to4 
@@ -37,7 +41,6 @@ test -n "$*" && echo "#you may do something like:  ip -6 addr add $IP6TO4_PREF:0
 for iface_ip6node in "$@";do
 	iface=${iface_ip6node%%=*}; ip6node=${iface_ip6node#*=}
 	ip addr add $IP6TO4_PREF:$ip6node dev $iface
-	ip route add $IP6TO4_PREF:${ip6node%%:*}::/64 dev $iface
 done
 echo
 test -t 1 && echo "#NOTHING done, use me as: $0   |sudo sh -x"
