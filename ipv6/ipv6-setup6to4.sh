@@ -1,11 +1,13 @@
 #!/bin/bash
+### ipv6-setup6to4.sh: print commands to setup ipv6 6to4 tunnel under Linux.
+###
 ### Author: JuanJo Ciarlante - jjo O mendoza gov ar
 ### usage: 
-###    ipv6-setup6to4.sh                      #just show
+###    ipv6-setup6to4.sh                      #just SHOW
 ###    ipv6-setup6to4.sh       | sudo sh -x   #do it by pipeing to "sh"     
-###    ipv6-setup6to4.sh auto  | sudo sh -x               #same as above
-###    ipv6-setup6to4.sh auto eth0=1::1/64 | sudo sh -x   #also setup eth0 with $IP6TO4_PREF:1::1/64
-###    ipv6-setup6to4.sh auto eth0=1::1/64  wlan0=2::1/64 | sudo sh -x
+###    ipv6-setup6to4.sh auto  | sudo sh -x   #same as above
+###    ipv6-setup6to4.sh auto eth0=1::1/64    #also SHOW howto setup eth0 with $IP6TO4_PREF:1::1/64
+###    ipv6-setup6to4.sh auto eth0=1::1/64 wlan0=2::1/64
 ###    ipv6-setup6to4.sh -r ...               #reverse the commands (eg: add -> del, etc)
 export PATH="/sbin:/usr/sbin:$PATH"
 test "$1" = "-r" && { shift;$0 "$@" | tac | sed -re 's/\badd\b/del/' -e 's/\bup\b/down/'; exit $?; }
