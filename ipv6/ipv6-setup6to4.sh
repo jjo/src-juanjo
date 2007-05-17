@@ -39,7 +39,7 @@ ip link set dev tun6to4 up
 ip addr add $IP6TO4_PREF::1/16 dev tun6to4
 ip route add ::/96 dev tun6to4 
 ip route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1
-test -n "$*" && echo "#you may do something like:  ip -6 addr add $IP6TO4_PREF:0001::1/64 dev eth0"
+test -z "$*" && echo "#you may do something like:  ip -6 addr add $IP6TO4_PREF:0001::1/64 dev eth0"
 for iface_ip6node in "$@";do
 	iface=${iface_ip6node%%=*}; ip6node=${iface_ip6node#*=}
 	ip addr add $IP6TO4_PREF:$ip6node dev $iface
