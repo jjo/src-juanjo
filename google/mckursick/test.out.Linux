@@ -1,0 +1,13 @@
+====== BEFORE wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]33520 .*[.:]111'
+25993 25983 S+   /bin/sh -c ulimit -c 0; [ Linux != Linux -a -x /usr/bin/sudo ] && SUDO=sudo;\??exec $SUDO ./zocket.bin.Linux 10.255.255.1 111 | tee test.out.Linux
+25994 25993 R+   ./zocket.bin.Linux 10.255.255.1 111
+25995 25994 Z+   [zocket.bin.Linu] <defunct>
+25996 25994 Z+   [zocket.bin.Linu] <defunct>
+25998 25994 Z+   [zocket.bin.Linu] <defunct>
+tcp        0     31 10.255.255.1:33520      10.255.255.1:111        FIN_WAIT1  
+====== AFTER  wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]33520 .*[.:]111'
+25993 25983 S+   /bin/sh -c ulimit -c 0; [ Linux != Linux -a -x /usr/bin/sudo ] && SUDO=sudo;\??exec $SUDO ./zocket.bin.Linux 10.255.255.1 111 | tee test.out.Linux
+25994 25993 S+   ./zocket.bin.Linux 10.255.255.1 111
+tcp        0     31 10.255.255.1:33520      10.255.255.1:111        FIN_WAIT1  

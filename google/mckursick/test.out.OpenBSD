@@ -1,0 +1,13 @@
+====== configuring pf:
++ echo block drop out inet proto tcp from 10.0.2.15 port 37414 to 10.255.255.1 port 111| pfctl -f-
+====== BEFORE wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]37414 .*[.:]111'
+30601 10818 Z+    (zocket.bin.OpenB)
+12416 10818 Z+    (zocket.bin.OpenB)
+16964 10818 Z+    (zocket.bin.OpenB)
+10818    16 I+    ./zocket.bin.OpenBSD 10.255.255.1 111 (zocket.bin.OpenB)
+tcp        0     30  10.0.2.15.37414        10.255.255.1.111       FIN_WAIT_1
+====== AFTER  wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]37414 .*[.:]111'
+10818    16 I+    ./zocket.bin.OpenBSD 10.255.255.1 111 (zocket.bin.OpenB)
+tcp        0     30  10.0.2.15.37414        10.255.255.1.111       FIN_WAIT_1

@@ -1,0 +1,11 @@
+====== configuring pf:
++ echo block drop out inet proto tcp from 10.0.2.15 port 1030 to 10.255.255.1 port 111| pfctl -f-
+====== BEFORE wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]1030 .*[.:]111'
+  933   932 SL+  ./zocket.bin.DragonFly 10.255.255.1 111
+  938   933 ZL+   (zocket.bin.Drago)
+  939   933 ZL+   (zocket.bin.Drago)
+  940   933 ZL+   (zocket.bin.Drago)
+====== AFTER  wait() ======
++ ps -o pid,ppid,stat,command|egrep [z]ocket;netstat -tn|egrep '[.:]1030 .*[.:]111'
+  933   932 SL+  ./zocket.bin.DragonFly 10.255.255.1 111
