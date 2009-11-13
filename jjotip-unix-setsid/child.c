@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include <sys/signal.h>
 #include <fcntl.h>
 
 char *ptsname(int);
-extern int errno;
 char *quiensoyio="padre";
 #define error(format, args...)  \
       fprintf (stderr, format , ## args)
@@ -87,7 +88,7 @@ int main(int ac, const char *av[]) {
 	do_ps("PREVIO setsid()");
 	setsid();
 
-	do_ps("POST   setsid()");
+//do_ps("POST   setsid()");
 	/*
 	 * Para poder provocar el efecto de:
 	 *   muerte de pgrp leader de la tty => SIGHUP al pgrp
