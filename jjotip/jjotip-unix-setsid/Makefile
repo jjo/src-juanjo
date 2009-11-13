@@ -1,0 +1,2 @@
+all : child
+CC=gcc
