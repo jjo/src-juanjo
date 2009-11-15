@@ -9,10 +9,10 @@ test-go-env:
 	echo "GOROOT=$${GOROOT?} GOARCH=$${GOARCH?} GOOS=$${GOOS}"
 
 %.$(O_EXT): %.go
-	$(GOC) $^
+	$(GOC) $(GOCFLAGS) $^
 
 %: %.$(O_EXT)
-	$(GOL) -o $@ $^
+	$(GOL) $(GOLFLAGS) -o $@ $^
 
 %.pretty: %
 	gofmt -spaces=true --tabwidth=2 $^ > $@
@@ -20,4 +20,4 @@ test-go-env:
 all_auto: test-go-env $(TARGETS_AUTO)
 
 clean_auto: 
-	rm -f $(TARGETS_AUTO)
+	rm -f $(TARGETS_AUTO) *.8
