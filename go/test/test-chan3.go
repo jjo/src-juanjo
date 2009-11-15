@@ -8,7 +8,6 @@ import (
   "flag";
 )
 
-
 const W = 2
 const P = 100
 const N_total_req = 1000000

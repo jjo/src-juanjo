@@ -3,9 +3,7 @@ GOL=8l
 O_EXT=8
 
 SRCS=$(wildcard *.go)
-TARGETS=$(SRCS:.go=)
-
-all: test-go-env $(TARGETS)
+TARGETS_AUTO=$(SRCS:.go=)
 
 test-go-env:
 	echo "GOROOT=$${GOROOT?} GOARCH=$${GOARCH?} GOOS=$${GOOS}"
@@ -19,5 +17,7 @@ test-go-env:
 %.pretty: %
 	gofmt -spaces=true --tabwidth=2 $^ > $@
 
-clean: $(TARGETS)
-	rm -f $^	
+all_auto: test-go-env $(TARGETS_AUTO)
+
+clean_auto: 
+	rm -f $(TARGETS_AUTO)
