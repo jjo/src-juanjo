@@ -1,8 +1,9 @@
-GOCFLAGS=-I.
+GCFLAGS=-I.
 
 all: server client-sync
 
 server: server.8 server-main.8
-	$(GOL) $(GOLFLAGS) -o $@ $^
+	$(LD) $(GLFLAGS) -o $@ $^
 
+clean: clean_auto
 include ../Makefile

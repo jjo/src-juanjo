@@ -1,6 +1,7 @@
-GOC=8g
-GOL=8l
-O_EXT=8
+ifeq ($(GOROOT),)
+$(error GOROOT environment var must be set)
+endif
+include $(GOROOT)/src/Make.$(GOARCH)
 
 SRCS=$(wildcard *.go)
 TARGETS_AUTO=$(SRCS:.go=)
@@ -8,11 +9,11 @@ TARGETS_AUTO=$(SRCS:.go=)
 test-go-env:
 	echo "GOROOT=$${GOROOT?} GOARCH=$${GOARCH?} GOOS=$${GOOS}"
 
-%.$(O_EXT): %.go
-	$(GOC) $(GOCFLAGS) $^
+%.$(O): %.go
+	$(GC) $(GCFLAGS) $^
 
-%: %.$(O_EXT)
-	$(GOL) $(GOLFLAGS) -o $@ $^
+%: %.$(O)
+	$(LD) $(GLFLAGS) -o $@ $^
 
 %.pretty: %
 	gofmt -spaces=true --tabwidth=2 $^ > $@
