@@ -1,11 +1,11 @@
 package main
 
 import (
-  "rpc";
-  "net";
-  "log";
-  "http";
-  "server";
+  "rpc"
+  "net"
+  "log"
+  "http"
+  "./server"
 )
 
 func main() {

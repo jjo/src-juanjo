@@ -4,7 +4,7 @@ import (
   "rpc";
   "log";
   "fmt";
-  "server";
+  "./server";
 )
 
 const serverAddress = "localhost"
