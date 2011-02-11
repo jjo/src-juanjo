@@ -1,0 +1,76 @@
+
+
+Setup->USB debugging
+	0bb4:0c01 -> 0bb4:0c02
+
+adb shell
+	su
+	busybox sh
+		export TERM=linux HOME=/root
+		# from 'stty -a' @the orig term
+		stty rows 33
+		stty cols 100
+
+
+adb logcat
+
+settings->Proxy
+	 echo -e 'su\nsqlite3 /data/data/com.android.providers.settings/databases/settings.db\nselect * from system;\n.quit\nexit\nexit\n' | adb shell
+
+
+(non-tip): /app/data -> /sdcard/...
+
+debian install
+	ln -s /sdcard/mnt/lib /lib
+	ln -s /sdcard/mnt/usr /usr
+	
+	M=/sdcard/mnt
+	export PATH=$PATH:$M/sbin:$M/sbin:$M/usr/bin:$M/usr/sbin
+
+	echo /dev/block/loop0 / ext2 rw,noatime,errors=continue 0 0 > /etc/mtab
+
+	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin chroot /sdcard/mnt 
+	mount /proc
+	mount /sys
+	mount /dev/pts
+	apt-get install mtd-tools
+
+
+/data/app
+  adb push /path/to/arm/binary/for/busybox /sdcard
+  adb shell
+    $ su
+    # mount -o remount,rw /dev/block/mtdblock3 /system
+    # cat /sdcard/busybox > /system/xbin/busybox
+    # rm /sdcard/busybox
+    # chmod 755 /system/xbin/busybox
+    # busybox sh
+      
+      BusyBox v1.10.2 (Ubuntu 1:1.10.2-2ubuntu1) built-in shell (ash)
+      Enter 'help' for a list of built-in commands.
+      
+      / # echo -e '#!/system/bin/sh\nexport HOME=/sdcard/root\nexport TERM=linux\nexec /system/xbin/busybox "$@"' > /system/xbin/bb
+      / # chmod 755 /system/xbin/bb
+      / # exit
+    # bb sh
+      / # mount -o remount,ro /system
+    
+     su
+	busybox sh
+		mount -o remount,rw /
+		mount -o remount,rw /system
+		cp -p /init.rc /init.rc.bak
+		echo -e "\nservice mount_app_data_hack /system/bin/mount_app_data_hack.sh\n    user root\n    group root\n    oneshot"  >> /init.rc
+		cat > /system/bin/mount_app_data_hack.sh << EOF
+#!/system/bin/busybox sh
+#ext2.ko should be at eg. /system/modules/2.6.25-01843-gfea26b0/ext2.ko
+insmod ext2
+mknod /dev/block/loop0 b 7 0
+mount -t ext2 -o loop /sdcard/data-extra.img /data/app
+chown 1000:1000 /data/app /data/app/*.apk
+EOF
+		chmod +x /system/bin/mount_app_data_hack.sh
+		mount -o remount,ro /system
+		mount -o remount,ro /
+		exit # from busybox
+	

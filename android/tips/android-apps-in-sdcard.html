@@ -1,0 +1,511 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.2.2" />
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+}
+
+strong {
+  font-weight: bold;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  border-bottom: 2px solid silver;
+  padding-top: 0.5em;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revision {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble,
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-right: 10%;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock {
+  margin-right: 0%;
+}
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock > div.content {
+  padding-left: 2.0em;
+}
+
+div.attribution {
+  text-align: right;
+}
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.verseblock div.content {
+  white-space: pre;
+}
+
+div.imageblock div.content { padding-left: 0; }
+div.imageblock img { border: 1px solid silver; }
+span.image img { border-style: none; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: italic;
+}
+dd > *:first-child {
+  margin-top: 0;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.olist2 {
+  list-style-type: lower-alpha;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+
+div.hlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hlist td {
+  padding-bottom: 5px;
+}
+td.hlist1 {
+  vertical-align: top;
+  font-style: italic;
+  padding-right: 0.8em;
+}
+td.hlist2 {
+  vertical-align: top;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-content {
+  padding-left: 2.0em;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<title>Android apps in sdcard</title>
+</head>
+<body>
+<div id="header">
+<h1>Android apps in sdcard</h1>
+<span id="author">Juanjo Ciarlante</span><br />
+v2.1
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">Don't do this without understanding what's going on<br />
+   <strong>THIS IS NOT a COPY&amp;PASTE HOWTO</strong></td>
+</tr></table>
+</div>
+</div>
+</div>
+<h2>Things you need</h2>
+<div class="sectionbody">
+<ul>
+<li>
+<p>
+Solid Linux sysadmin knowledge
+</p>
+</li>
+<li>
+<p>
+Extra software:
+</p>
+<ul>
+<li>
+<p>
+<tt>adb</tt>       (x86 linux binary, from my x86 SDK):<br />
+</p>
+<dl>
+<dt>
+Linux x86 tool for communicating with the G1
+</dt>
+<dd>
+<p>
+     <a href="http://sites.google.com/site/juanjosec/android/adb.x86">http://sites.google.com/site/juanjosec/android/adb.x86</a>
+</p>
+</dd>
+</dl>
+</li>
+<li>
+<p>
+<tt>busybox</tt>   (arm binary):<br />
+</p>
+<dl>
+<dt>
+If you don't know busybox, you should probably not be reading this howto :)
+</dt>
+<dd>
+<p>
+     <a href="http://cache.saurik.com/android/armel/busybox">http://cache.saurik.com/android/armel/busybox</a>
+     see [1] for further details
+</p>
+</dd>
+</dl>
+</li>
+<li>
+<p>
+<tt>ext2.ko</tt>  (arm kernel module):<br />
+</p>
+<dl>
+<dt>
+The Linux kernel inside the G1 doesn't include it
+</dt>
+<dd>
+<p>
+     <a href="http://cache.saurik.com/android/2.6.25-01843-gfea26b0/fs/ext2/ext2.ko">http://cache.saurik.com/android/2.6.25-01843-gfea26b0/fs/ext2/ext2.ko</a>
+</p>
+</dd>
+</dl>
+</li>
+<li>
+<p>
+<tt>mke2fs.arm</tt> (arm binary, from my e2fsprogs android build):<br />
+</p>
+<dl>
+<dt>
+Neither the tool to create ext2 fs
+</dt>
+<dd>
+<p>
+     <a href="http://sites.google.com/site/juanjosec/android/mke2fs.arm">http://sites.google.com/site/juanjosec/android/mke2fs.arm</a>
+</p>
+</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li>
+<p>
+A working <tt>adb</tt> setup:
+</p>
+<ul>
+<li>
+<p>
+That is: being able to spawn a shell at the G1, from the Linux box:
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>jjo@jjobuk:~$ adb shell
+$ su                  ### &lt;-- here we are INSIDE the G1 =)
+# cat /proc/version
+Linux version 2.6.25-01843-gfea26b0
+(android-build@apa27.mtv.corp.google.com) (gcc version 4.2.1) #6
+PREEMPT Mon Oct 6 14:13:36 PDT 2008
+# cat /proc/cpuinfo
+Processor : ARMv6-compatible processor rev 2 (v6l)
+BogoMIPS  : 245.36
+Features  : swp half thumb fastmult edsp java
+CPU implementer : 0x41
+:</tt></pre>
+</div></div>
+<p>Note that for doing this, you must have <tt>lsusb</tt> showing
+<tt>0bb4:0c02</tt>, eg. from my linux box:</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>jjo@jjobuk:~$ sudo lsusb
+Bus 001 Device 002: ID 0bb4:0c02 High Tech Computer Corp.
+Bus 001 Device 001: ID 0000:0000
+Bus 002 Device 001: ID 0000:0000</tt></pre>
+</div></div>
+<p>else if it shows <tt>0bb4:0c01</tt>, you'll need to enable usb debugging in the G1 by</p>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>Menu-&gt;Settings-&gt;Applications-&gt;Development-&gt;USB debugging [x]</tt></pre>
+</div></div>
+</div></div>
+<p>You may also need to setup udev if you want non-root access:
+create an <tt>android</tt> group, add wanted users to it, then allow access by:</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>jjo@jjobuk:~$ sudo bash
+jjo@jjobuk:~# cat &gt; /etc/udev/rules.d/50-android.rules &lt;&lt;EOF
+SUBSYSTEM=="usb", SYSFS{idVendor}=="0bb4", GROUP="android", MODE="0660"
+EOF
+jjo@jjobuk:~# /etc/init.d/udev reload</tt></pre>
+</div></div>
+<p>Alternately, just put <tt>0666</tt> above =)</p>
+</li>
+</ul>
+</li>
+<li>
+<p>
+Obviously &#8230;
+</p>
+<ul>
+<li>
+<p>
+An Android G1 :-), unlocked (guess so &#8230; I got mine from
+   <a href="http://www.google.ch/">my employer</a> as Christmas gift ;) plus its USB cable
+</p>
+</li>
+<li>
+<p>
+A Linux box
+</p>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2>Mixed tips</h2>
+<div class="sectionbody">
+<ul>
+<li>
+<p>
+See under the hood while playing with the G1 ( sorta <tt>tail -f
+  /var/log/syslog</tt> ;):
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>jjo@jjobuk:~$ adb shell logcat
+D/dalvikvm( 6639): GC freed 1517 objects / 109640 bytes in 180ms
+D/net.jaqpot.netcounter.service.NetCounterService(  271): Service onStart.
+D/dalvikvm(  271): GC freed 447 objects / 60856 bytes in 116ms
+:</tt></pre>
+</div></div>
+</li>
+</ul>
+<h3>Refs</h3>
+<ul>
+<li>
+<p>
+[1] <a href="http://www.saurik.com/id/10">http://www.saurik.com/id/10</a>
+</p>
+</li>
+<li>
+<p>
+[2] <a href="http://android-dls.com/wiki/index.php?title=Compiling_for_Android">http://android-dls.com/wiki/index.php?title=Compiling_for_Android</a>
+</p>
+</li>
+</ul>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 10-Jan-2009 04:19:51 CEST
+</div>
+</div>
+</body>
+</html>

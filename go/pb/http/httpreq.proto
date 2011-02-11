@@ -1,0 +1,12 @@
+package http;
+	
+enum TYPE {
+	GET = 1;
+	POST = 2;
+  NONE = 3;
+};
+
+message Request {
+  required TYPE type = 1 [default = GET];
+  required string path = 2;
+}

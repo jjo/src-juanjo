@@ -1,0 +1,96 @@
+Android apps in sdcard
+======================
+Juanjo Ciarlante
+v2.1
+
+IMPORTANT: Don't do this without understanding what's going on +
+   *THIS IS NOT a COPY&PASTE HOWTO* 
+
+Things you need
+---------------
+* Solid Linux sysadmin knowledge
+* Extra software:
+ - +adb+       (x86 linux binary, from my x86 SDK): +
+ Linux x86 tool for communicating with the G1::
+     http://sites.google.com/site/juanjosec/android/adb.x86[]
+ - +busybox+   (arm binary): +
+ If you don't know busybox, you should probably not be reading this howto :)::
+     http://cache.saurik.com/android/armel/busybox[]
+     see [1] for further details
+ - +ext2.ko+  (arm kernel module): +
+ The Linux kernel inside the G1 doesn't include it::
+     http://cache.saurik.com/android/2.6.25-01843-gfea26b0/fs/ext2/ext2.ko[]
+ - +mke2fs.arm+ (arm binary, from my e2fsprogs android build): +
+ Neither the tool to create ext2 fs::
+     http://sites.google.com/site/juanjosec/android/mke2fs.arm[]
+
+* A working +adb+ setup:
+  - That is: being able to spawn a shell at the G1, from the Linux box:
++
+------
+jjo@jjobuk:~$ adb shell
+$ su                  ### <-- here we are INSIDE the G1 =)
+# cat /proc/version
+Linux version 2.6.25-01843-gfea26b0
+(android-build@apa27.mtv.corp.google.com) (gcc version 4.2.1) #6
+PREEMPT Mon Oct 6 14:13:36 PDT 2008
+# cat /proc/cpuinfo
+Processor : ARMv6-compatible processor rev 2 (v6l)
+BogoMIPS  : 245.36
+Features  : swp half thumb fastmult edsp java 
+CPU implementer : 0x41
+:
+------
++
+Note that for doing this, you must have +lsusb+ showing
++0bb4:0c02+, eg. from my linux box:
++
+---------------
+jjo@jjobuk:~$ sudo lsusb
+Bus 001 Device 002: ID 0bb4:0c02 High Tech Computer Corp. 
+Bus 001 Device 001: ID 0000:0000  
+Bus 002 Device 001: ID 0000:0000  
+---------------
++
+else if it shows +0bb4:0c01+, you'll need to enable usb debugging in the G1 by
++
+****
+    Menu->Settings->Applications->Development->USB debugging [x]
+****
++
+You may also need to setup udev if you want non-root access:
+create an +android+ group, add wanted users to it, then allow access by:
++
+----------
+jjo@jjobuk:~$ sudo bash
+jjo@jjobuk:~# cat > /etc/udev/rules.d/50-android.rules <<EOF
+SUBSYSTEM=="usb", SYSFS{idVendor}=="0bb4", GROUP="android", MODE="0660"
+EOF
+jjo@jjobuk:~# /etc/init.d/udev reload
+----------
++
+Alternately, just put +0666+ above =)
+
+* Obviously ...
+ - An Android G1 :-), unlocked (guess so ... I got mine from
+   http://www.google.ch/[my employer] as Christmas gift ;) plus its USB cable
+ - A Linux box
+
+
+Mixed tips
+----------
+* See under the hood while playing with the G1 ( sorta `tail -f
+  /var/log/syslog` ;):
++
+---------------
+jjo@jjobuk:~$ adb shell logcat
+D/dalvikvm( 6639): GC freed 1517 objects / 109640 bytes in 180ms
+D/net.jaqpot.netcounter.service.NetCounterService(  271): Service onStart.
+D/dalvikvm(  271): GC freed 447 objects / 60856 bytes in 116ms
+:
+---------------
+Refs
+~~~~
+- [1] http://www.saurik.com/id/10[]
+- [2] http://android-dls.com/wiki/index.php?title=Compiling_for_Android[]
+

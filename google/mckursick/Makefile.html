@@ -1,0 +1,36 @@
+<pre width="80"><font color="#A020F0">## Makefile for zocket.c</font>
+<font color="#A020F0">## Tested on: Linux 2.6, FreeBSD 6.x(dragonfly), OpenBSD 4.3</font>
+CFLAGS=-Wall -g
+T=zocket.bin.$(OS)
+DEST=10.255.255.1 111
+
+<font color="#A020F0">## No portable (GNU,BSD) way of doing VAR=&lt;output_from_shellcmd&gt;, wrap</font>
+<font color="#A020F0">## them by invoking make again</font>
+<strong><font color="#FF0000">all:</font></strong>
+        make OS=`uname -s` all_os
+<strong><font color="#FF0000">test:</font></strong>
+        make OS=`uname -s` test_os
+        
+<strong><font color="#FF0000">all_os:</font></strong> $(T)
+
+<strong><font color="#FF0000">setup_pf:</font></strong>
+<font color="#A020F0">        ## FreeBSD: dynload PF module</font>
+        -@test -x /sbin/kldload &amp;&amp; \
+                { /sbin/kldstat | egrep pf.ko || { kldload pf; sleep 1;};}
+<font color="#A020F0">        ## Enable PF</font>
+        -@test -x /sbin/pfctl &amp;&amp; \
+                sudo /sbin/pfctl -e -f- &lt;/dev/null 2&gt;/dev/null;exit 0
+
+<strong><font color="#FF0000">test_os:</font></strong> all_os setup_pf
+        @ulimit -c 0; [ $(OS) != Linux -a -x /usr/bin/sudo ] &amp;&amp; SUDO=sudo;\
+                exec $$SUDO ./$(T) $(DEST) | tee test.out.$(OS)
+
+$(T): zocket.c
+        $(CC) $(CFLAGS) -o $(@) $(?)
+
+<strong><font color="#FF0000">clean:</font></strong>
+        rm -fv zocket.bin.*
+
+%.html: %
+        c2html -s $(^)
+</pre>

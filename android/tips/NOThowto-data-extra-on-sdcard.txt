@@ -1,0 +1,20 @@
+	/ # ls -l /system/modules/2.6.25-01843-gfea26b0/
+	----rw-rw-    1 1000     1000       786633 Jan  1 18:21 ext2.ko
+	----rw-rw-    1 1000     1000      1470509 Jan  1 18:22 unionfs.ko
+
+
+	mknod /dev/block/loop0 b 7 0
+	dd if=/dev/zero bs=1k count=64k of=/sdcard/data-extra.img
+	mkdosfs -L data-extra /sdcard/data-extra.img
+	mkdir /data/extra
+	mount -o loop,uid=1000,gid=1000 /sdcard/data-extra.img /data/extra/
+	mkdir /data/extra/app
+	mv com.accuweather.android.apk /data/extra/app
+	ln -s /data/extra/app/com.accuweather.android.apk .
+	==> Ok, but doesnt work :P
+
+	unionfs : http://www.linuxjournal.com/node/7714/print
+	...
+	mount -t unionfs -o dirs=/data/app:/data/extra/app none /data/app
+	cp, etc ... (+chmod, mount -o ... fmask=... )
+	==> neither :(
