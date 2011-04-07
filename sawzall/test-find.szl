@@ -1,0 +1,8 @@
+#!/usr/bin/szl
+
+t: table sum[filename: string] of size: int;
+
+fields := sawzall(string(input), "[^\t ]+");
+if (len(fields)>1) {
+  emit t[fields[1]] <- int(fields[0],10);
+}
