@@ -55,14 +55,8 @@ def main(args=None):
       print __doc__,
       return 0
 
-  patt = '.*%s' % args[0]
-  fileroot = args[1]
-  filepatt = '*.log*'
-  try:
-    filepatt = args[2]
-  except IndexError:
-    pass
-
+  (patt, fileroot, filepatt) = (args +
+                                [None, '/var/log', '*.log*'][len(args):])
   filenames=gen_find(filepatt, fileroot)
   files=gen_open(filenames)
   lines=gen_cat(files)
