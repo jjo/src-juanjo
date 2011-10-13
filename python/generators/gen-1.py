@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
+"""Do grep thru /var/log logfiles, first argument is pattern to match"""
 import os
 import fnmatch
 import gzip
 import bz2
 import re
+import getopt
+import sys
 
 def gen_find(filepat,top):
   for path, dirlist, filelist in os.walk(top):
@@ -34,11 +37,39 @@ def gen_grep(lines, pattern):
     if regex.match(line):
       yield(line)
 
-filenames=gen_find('*.log*', '/var/log')
-files=gen_open(filenames)
-lines=gen_cat(files)
-patt=r'.*jjo\b'
-matches=gen_grep(lines, patt)
+def main(args=None):
 
-for line in matches:
-  print line,
+  if args is None:
+    args = sys.argv[1:]
+  try:
+    opts, args = getopt.getopt(args, "-h",
+                              ["help"])
+
+  except getopt.error, err:
+    print err
+    print "use -h/--help for cmdlien help"
+    return 255
+
+  for o,a in opts:
+    if o in ("-h", "--help"):
+      print __doc__,
+      return 0
+
+  patt = '.*%s' % args[0]
+  fileroot = args[1]
+  filepatt = '*.log*'
+  try:
+    filepatt = args[2]
+  except IndexError:
+    pass
+
+  filenames=gen_find(filepatt, fileroot)
+  files=gen_open(filenames)
+  lines=gen_cat(files)
+  matches=gen_grep(lines, patt)
+
+  for line in matches:
+    print line,
+
+if __name__ == '__main__':
+    sys.exit(main())
