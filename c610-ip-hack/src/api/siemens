@@ -1,0 +1,54 @@
+#!/bin/sh
+# start:
+#   uhttpd -h /www/jjo -x /api -f -p 81
+#   iptables -t nat -I PREROUTING -d tel.search.ch -p tcp --dport 80 -j REDIRECT --to-port 81
+
+# sample url 'http://tel.search.ch/api/siemens?command=get%5flist&type=pb&prid=0&fn=%2a&ln=%2a&ct=%2a&st=%2a&hm=03514644411&nr=%2a&mb=%2a&sip=%2a&zc=%2a&prid=0&lang=1&first=1&count=1&mac=7C2F801E1234&reqsrc=auto&limit=204'
+# 	REQUEST_URI=/api/siemens?command=get%5flist&type=pb&prid=0&fn=%2a&ln=%2a&ct=%2a&st=%2a&hm=03514644411&nr=%2a&mb=%2a&sip=%2a&zc=%2a&prid=0&lang=1&first=1&count=1&mac=7C2F801E1234&reqsrc=auto&limit=204
+#
+
+TIMEOUT=/usr/bin/timeout
+
+[ -x ${TIMEOUT} ] && TIMEOUT="${TIMEOUT} 30" || TIMEOUT=""
+
+DEFAULT_AREA_CODE=0261
+req_number=${REQUEST_URI##*hm=}
+req_number=${req_number%%&*}
+test -n "${req_number}" || exit 0
+
+case ${req_number} in
+	[45]*) req_number=${DEFAULT_AREA_CODE}${req_number};;
+	0*) ;; ## eg. 02614441111 03514234567 01142345678
+	*) exit 0;;
+esac
+
+
+while read var value;do
+	case "$var" in
+		name|city|state|zipCode|streetName|streetNumber|phoneAsString|phoneAreaCode) eval "$var=\"$value\"";;
+	esac
+done << EOF
+$($TIMEOUT wget -q -O- http://www.paginasblancas.com.ar/Telefono/${req_number} | sed -rn '/GLOBAL_CONTEXT.results/{ s/.*\{//;s/\}.*//; s/"([^"]+)"/\1/g; s/:/ /g;s/,/\n/gp }')
+EOF
+
+test -n "${name}" || exit 0
+[ "${phoneAreaCode}" = "${DEFAULT_AREA_CODE}" ] || name="(${phoneAreaCode}) ${name}"
+
+set -u
+RANDOM_X=$(hexdump -e '"%08x"' -n8 /dev/urandom)
+RANDOM_Y=$(hexdump -e '"%04x"' -n4 /dev/urandom)
+echo -en "Content-Type: text/xml; charset=UTF-8\r\n\r\n"
+cat << EOF
+<?xml version="1.0" encoding="UTF-8" ?>
+<list response="get_list" type="pb" total="5" first="1" last="1" reqid="${RANDOM_Y}">
+  <entry id="${RANDOM_X}">
+	<ln>${name}</ln>
+	<ct>${city}, ${state}</ct>
+	<zc>${zipCode}</zc>
+	<st>${streetName}</st>
+	<nr>${streetNumber}</nr>
+	<hm>${phoneAsString}</hm>
+  </entry>
+</list>
+
+EOF

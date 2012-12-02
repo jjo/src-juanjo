@@ -1,0 +1,18 @@
+#!/bin/sh
+case "$1" in
+	start)
+		uhttpd -h /www/jjo -x /api -p 81 && \
+		iptables -t nat -I PREROUTING -d tel.search.ch -p tcp --dport 80 -j REDIRECT --to-port 81
+	;;
+	stop)
+		lsof -sTCP:LISTEN -i TCP:81 -t | xargs -r kill
+		iptables -t nat -D PREROUTING -d tel.search.ch -p tcp --dport 80 -j REDIRECT --to-port 81
+	;;
+	status)
+		lsof -sTCP:LISTEN -i TCP:81
+		pgrep -fl uhttpd.*81
+		iptables-save|egrep REDIRECT
+	;;
+		 	
+esac
+
