@@ -1,4 +1,4 @@
-#!/usr/bin/szl
+#!/usr/local/bin/szl
 
 t: table sum[filename: string] of size: int;
 
