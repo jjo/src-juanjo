@@ -6,7 +6,7 @@
 # Copyright 2012, Canonical Ltd.
 # License: GPLv3
 set -u
-PREFIX=${1:-users.jjo.host.$HOSTNAME.netstat.stats}
+PREFIX=${1:-production.host.$HOSTNAME.netstat.stats}
 PERIOD=${2:-10min}
 
 TSTAMP="$(date +%s)"
