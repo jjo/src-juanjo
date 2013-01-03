@@ -17,7 +17,7 @@ TSTAMP="$(date +%s)"
 get_metrics() {
     curl -s "http://${HTTPAUTH}@${HOSTPORT}/;csv;norefresh"| \
         awk -v FS=, '/^#/{    for(i=1;i<NF;i++) fieldname[i]=$i;}
-                     /^[^#]/{ for(i=3;i<NF;i++) if($i) printf("%s.%s.%s %d\n", $1, $2, fieldname[i], $i);}'
+                     /^[^#]/{ for(i=3;i<NF;i++) if(length($i) > 0) printf("%s.%s.%s %d\n", $1, $2, fieldname[i], $i);}'
 }
 
 # Add carbon-isms to <var> <value> lines
