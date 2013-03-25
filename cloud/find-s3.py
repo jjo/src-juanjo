@@ -3,11 +3,11 @@
 # Author: JuanJo Ciarlante <jjo@canonical.com>
 # License: GPlv3
 # Copyright 2013, Canonical Ltd.
-#
+# asd asd ad
 """
 find-s3.py: simple find like command for swift/s3 buckets
 """
-# pylint: disable=C0103,W0142,E1101
+# pylint: disable=E1101
 import os
 import sys
 import argparse
@@ -49,12 +49,12 @@ class SStorage(object):
             #swift: 2013-03-14T08:34:08.937090Z
             if entry.last_modified[-1] == 'Z':
                 entry.last_modified = entry.last_modified[0:-1]
-            t = time.strptime(entry.last_modified, "%Y-%m-%dT%H:%M:%S.%f")
+            mtime = time.strptime(entry.last_modified, "%Y-%m-%dT%H:%M:%S.%f")
             if (args.mtime and not args.mmin):
                 args.mmin = args.mtime * 1440
             if (args.mmin):
-                ts = (time.time() - abs(args.mmin) * 60)
-                if bool(args.mmin < 0) == bool(time.mktime(t) < ts):
+                cmptime = (time.time() - abs(args.mmin) * 60)
+                if bool(args.mmin < 0) == bool(time.mktime(mtime) < cmptime):
                     continue
             if (args.size_less):
                 args.size = '-' + args.size_less
@@ -206,71 +206,71 @@ def human_units(size, args):
 
 def main():
     "The main()"
-    p = argparse.ArgumentParser(description='S3/Swift simple find')
-    p.add_argument('bucket', type=str, nargs='*',
-                   help='bucket names')
-    p.add_argument('-prefix', '--prefix', type=str, action='store',
-                   help='prefix, only valid for swift storage')
-    p.add_argument('-stype', '--stype', type=str, action='store',
-                   help='storage type: {s3, swift}')
-    p.add_argument('-name', '--name', type=str, action='store',
-                   help='name, with globbing wildcards')
-    p.add_argument('-iname', '--iname', type=str, action='store',
-                   help='iname, with globbing wildcards')
-    p.add_argument('-mtime', '--mtime', type=float, action='store',
-                   help='~similar to find cmd: positive for older, '
-                   'negative for newer')
-    p.add_argument('-mmin', '--mmin', type=float, action='store',
-                   help='~similar to find cmd: positive for older, '
-                   'negative for newer')
-    p.add_argument('-size', '--size', type=str, action='store',
-                   help='only objects larger than size[kmg] '
-                   '(negative numbers work with no units postfix)')
-    p.add_argument('-size-less', '--size-less', type=str, action='store',
-                   help='only objects smaller than size (useful for units, '
-                   'e.g. --size-less 1M)')
-    p.add_argument('-dry-run', '--dry-run', action='store_true',
-                   help="don't change/delete anything, only show")
-    p.add_argument('-yes', '--yes', action='store_true',
-                   help="don't ask, assume 'yes' to prompts")
-    p.add_argument('-delete', '--delete', action='store_true',
-                   help='DELETE listed objects, will prompt for yes/no')
-    p.add_argument('-delet', '--delet', action='store_true',
-                   help='bogus option just to avoid --delete short prefixing')
-    p.add_argument('-ls', '--ls', action='store_true',
-                   help='list object: name mtime size status')
-    p.add_argument('-tar', '--tar', action='store_true',
-                   help='create a tarfile stream to stdout, from found files')
-    p.add_argument('-du', '--du', action='store_true',
-                   help='only print a line with aggregated '
-                   'disk-usage from matched objects')
-    p.add_argument('-human', '--human', action='store_true',
-                   help='show human units for size')
-    p.add_argument('-all', '--all', action='store_true',
-                   help='do it over all buckets')
-    p.add_argument('--ec2-access-key', action='store',
-                   default=os.environ.get('EC2_ACCESS_KEY'))
-    p.add_argument('--ec2-secret-key', action='store',
-                   default=os.environ.get('EC2_SECRET_KEY'))
-    p.add_argument('--ec2-insecure', action='store_true',
-                   default=os.environ.get('EC2_INSECURE'))
-    p.add_argument('--s3-hostport', action='store',
-                   default=os.environ.get('S3_HOSTPORT'))
-    p.add_argument('--os-username', action='store',
-                   default=os.environ.get('OS_USERNAME'))
-    p.add_argument('--os-tenant-name', action='store',
-                   default=os.environ.get('OS_TENANT_NAME'))
-    p.add_argument('--os_password', action='store',
-                   default=os.environ.get('OS_PASSWORD'))
-    p.add_argument('--os_auth_url', action='store',
-                   default=os.environ.get('OS_AUTH_URL'))
-    p.add_argument('--os-region-name', action='store',
-                   default=os.environ.get('OS_REGION_NAME'))
-    args = p.parse_args()
+    par = argparse.ArgumentParser(description='S3/Swift simple find')
+    par.add_argument('bucket', type=str, nargs='*',
+                     help='bucket names')
+    par.add_argument('-prefix', '--prefix', type=str, action='store',
+                     help='prefix, only valid for swift storage')
+    par.add_argument('-stype', '--stype', type=str, action='store',
+                     help='storage type: {s3, swift}')
+    par.add_argument('-name', '--name', type=str, action='store',
+                     help='name, with globbing wildcards')
+    par.add_argument('-iname', '--iname', type=str, action='store',
+                     help='iname, with globbing wildcards')
+    par.add_argument('-mtime', '--mtime', type=float, action='store',
+                     help='~similar to find cmd: positive for older, '
+                     'negative for newer')
+    par.add_argument('-mmin', '--mmin', type=float, action='store',
+                     help='~similar to find cmd: positive for older, '
+                     'negative for newer')
+    par.add_argument('-size', '--size', type=str, action='store',
+                     help='only objects larger than size[kmg] '
+                     '(negative numbers work with no units postfix)')
+    par.add_argument('-size-less', '--size-less', type=str, action='store',
+                     help='only objects smaller than size (useful for units, '
+                     'e.g. --size-less 1M)')
+    par.add_argument('-dry-run', '--dry-run', action='store_true',
+                     help="don't change/delete anything, only show")
+    par.add_argument('-yes', '--yes', action='store_true',
+                     help="don't ask, assume 'yes' to prompts")
+    par.add_argument('-delete', '--delete', action='store_true',
+                     help='DELETE listed objects, will prompt for yes/no')
+    par.add_argument('-delet', '--delet', action='store_true',
+                     help='bogus option just to avoid --delete short prefix')
+    par.add_argument('-ls', '--ls', action='store_true',
+                     help='list object: name mtime size status')
+    par.add_argument('-tar', '--tar', action='store_true',
+                     help='create a tarfile, from found files [NOTIMPL]')
+    par.add_argument('-du', '--du', action='store_true',
+                     help='only print a line with aggregated '
+                     'disk-usage from matched objects')
+    par.add_argument('-human', '--human', action='store_true',
+                     help='show human units for size')
+    par.add_argument('-all', '--all', action='store_true',
+                     help='do it over all buckets')
+    par.add_argument('--ec2-access-key', action='store',
+                     default=os.environ.get('EC2_ACCESS_KEY'))
+    par.add_argument('--ec2-secret-key', action='store',
+                     default=os.environ.get('EC2_SECRET_KEY'))
+    par.add_argument('--ec2-insecure', action='store_true',
+                     default=os.environ.get('EC2_INSECURE'))
+    par.add_argument('--s3-hostport', action='store',
+                     default=os.environ.get('S3_HOSTPORT'))
+    par.add_argument('--os-username', action='store',
+                     default=os.environ.get('OS_USERNAME'))
+    par.add_argument('--os-tenant-name', action='store',
+                     default=os.environ.get('OS_TENANT_NAME'))
+    par.add_argument('--os_password', action='store',
+                     default=os.environ.get('OS_PASSWORD'))
+    par.add_argument('--os_auth_url', action='store',
+                     default=os.environ.get('OS_AUTH_URL'))
+    par.add_argument('--os-region-name', action='store',
+                     default=os.environ.get('OS_REGION_NAME'))
+    args = par.parse_args()
 
     if args.delet:
         print >> sys.stderr, "ERROR: must pass full option: --delete\n"
-        p.print_help()
+        par.print_help()
         sys.exit(1)
 
     class_bytype = {'swift': SWStorage, 's3': S3Storage}
