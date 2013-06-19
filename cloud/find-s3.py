@@ -29,7 +29,7 @@ class SStorageEntry():
         self.size = size
         self.last_modified = last_modified
         for key in kwargs:
-            self.key = kwargs[key]
+            setattr(self, key, kwargs[key])
 
 
 class SStorage(object):
@@ -75,8 +75,13 @@ class SStorage(object):
         for entry in entries:
             if args.du:
                 size_total = size_total + entry.size
+            elif args.md5:
+                print "  {name:32} {md5}\n".format(
+                    name=entry.name,
+                    md5=entry.hash,
+                ),
             elif args.ls:
-                print "  {name}\t{mtime}\t{size:>12s}\n".format(
+                print "  {name:32} {mtime}\t{size:>12s}\n".format(
                     name=entry.name,
                     mtime=entry.last_modified,
                     size=human_units(entry.size, args),
@@ -90,7 +95,7 @@ class SStorage(object):
                     if not args.dry_run:
                         self.delete_entry(entry)
         if args.du:
-            print "  {}".format(human_units(size_total, args))
+            print "total: {}".format(human_units(size_total, args))
 
     def do_find(self):
         "Main entry point: Plug generators together"
@@ -123,8 +128,8 @@ class S3Storage(SStorage):
         "S3: generate buckets, from passed args"
         if self._args.all:
             for bucket in self._conn.get_all_buckets():
-                print "{name}/\tctime={created}".format(
-                    name=bucket.name,
+                print "{name:32} ctime={created}".format(
+                    name="{}/".format(bucket.name),
                     created=bucket.creation_date,
                 )
                 yield (bucket.name, bucket)
@@ -162,8 +167,8 @@ class SWStorage(SStorage):
         "Swift: generate containers, from passed args"
         if self._args.all:
             for bucket in self._conn.get_account()[1]:
-                print "{name}/\tbytes={bytes} count={count}".format(
-                    name=bucket['name'],
+                print "{name:32} bytes={bytes} count={count}".format(
+                    name="{}/".format(bucket['name']),
                     bytes=human_units(bucket['bytes'], self._args),
                     count=bucket['count'],
                 )
@@ -180,7 +185,7 @@ class SWStorage(SStorage):
             for item in container:
                 yield SStorageEntry(item['name'], item['name'],
                                     item['bytes'], item['last_modified'],
-                                    parent_name=name)
+                                    parent_name=name, hash=item['hash'])
 
     def delete_entry(self, entry):
         "Swift: delete single entry"
@@ -239,6 +244,8 @@ def main():
                      help='bogus option just to avoid --delete short prefix')
     par.add_argument('-ls', '--ls', action='store_true',
                      help='list object: name mtime size status')
+    par.add_argument('-md5', '--md5', action='store_true',
+                     help='list md5: name md5')
     par.add_argument('-tar', '--tar', action='store_true',
                      help='create a tarfile, from found files [NOTIMPL]')
     par.add_argument('-du', '--du', action='store_true',
