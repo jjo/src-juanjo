@@ -3,9 +3,18 @@
 # Author: JuanJo Ciarlante <jjo@canonical.com>
 # License: GPlv3
 # Copyright 2013, Canonical Ltd.
-# asd asd ad
+#
 """
 find-s3.py: simple find like command for swift/s3 buckets
+usage:
+    find-s3.py -all
+    find-s3.py mybucket
+    find-s3.py -ls mybucket
+    find-s3.py -md5 mybucket
+
+    find-s3.py -mtime -1 mybucket
+    find-s3.py -mmin -60 mybucket
+    find-s3.py -size +1G mybucket
 """
 # pylint: disable=E1101
 import os
