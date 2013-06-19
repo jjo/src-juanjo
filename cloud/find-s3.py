@@ -26,7 +26,7 @@ import distutils.util
 from signal import signal, SIGPIPE, SIG_DFL
 
 
-UNITS_TO_EXP = {'B': 1, 'K': 10, 'M': 20, 'G': 30, 'T': 40}
+UNITS_TO_EXP = {'B': 0, 'K': 10, 'M': 20, 'G': 30, 'T': 40}
 EXP_TO_UNITS = dict([(v, k) for (k, v) in UNITS_TO_EXP.iteritems()])
 
 
@@ -118,7 +118,7 @@ class S3Storage(SStorage):
         super(S3Storage, self).__init__(args)
         import boto
         import boto.s3.connection
-        assert(not args.prefix)
+        self.prefix = args.prefix
         if args.s3_hostport:
             self._conn = boto.connect_s3(
                 aws_access_key_id=args.ec2_access_key,
@@ -148,7 +148,7 @@ class S3Storage(SStorage):
     def gen_entries(self, buckets):
         "S3: for each consumed bucket, generate its entries"
         for (name, bucket) in buckets:
-            for item in bucket.list():
+            for item in bucket.list(prefix=self.prefix):
                 yield SStorageEntry(item.name, item.key, item.size,
                                     item.last_modified,
                                     parent_name=name, parent_ref=bucket)
@@ -176,10 +176,10 @@ class SWStorage(SStorage):
         "Swift: generate containers, from passed args"
         if self._args.all:
             for bucket in self._conn.get_account()[1]:
-                print "{name:32} bytes={bytes} count={count}".format(
+                print "{name:32}\ttotal_bytes={size} total_count={cnt}".format(
                     name="{}/".format(bucket['name']),
-                    bytes=human_units(bucket['bytes'], self._args),
-                    count=bucket['count'],
+                    size=human_units(bucket['bytes'], self._args),
+                    cnt=bucket['count'],
                 )
                 name = bucket['name']
                 yield (name, self._conn.get_container(
