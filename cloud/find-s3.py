@@ -82,7 +82,7 @@ class SStorage(object):
                     size=human_units(entry.size, args),
                 ),
             else:
-                print "  {}".format(entry.key)
+                print "  {}".format(entry.name)
             if (args.delete):
                 if args.yes or yesno("Delete: {}/{} {}?".format(
                     entry.parent_name, entry.name,
@@ -270,6 +270,9 @@ def main():
 
     if args.delet:
         print >> sys.stderr, "ERROR: must pass full option: --delete\n"
+        par.print_help()
+        sys.exit(1)
+    if not args.bucket and not args.all:
         par.print_help()
         sys.exit(1)
 
