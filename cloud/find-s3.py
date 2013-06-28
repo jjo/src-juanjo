@@ -4,6 +4,7 @@
 # License: GPlv3
 # Copyright 2013, Canonical Ltd.
 #
+# https://raw.github.com/jjo/src-juanjo/master/cloud/find-s3.py
 """
 find-s3.py: simple find like command for swift/s3 buckets
 usage:
@@ -85,9 +86,10 @@ class SStorage(object):
             if args.du:
                 size_total = size_total + entry.size
             elif args.md5:
-                print "  {name:32} {md5}\n".format(
-                    name=entry.name,
+                print "{md5}  {parent_name}/{name}\n".format(
                     md5=entry.hash,
+                    parent_name=entry.parent_name,
+                    name=entry.name,
                 ),
             elif args.ls:
                 print "  {name:32} {mtime}\t{size:>12s}\n".format(
