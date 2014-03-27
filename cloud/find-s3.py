@@ -301,7 +301,8 @@ def main():
         elif args.ec2_access_key and args.ec2_secret_key:
             args.stype = 's3'
         else:
-            print >> sys.stderr, "ERROR: can't guess stype = 's3' or 'swift'"
+            print >> sys.stderr, ("ERROR: can't guess stype = 's3' or 'swift' "
+                                  "(missing credentials?)")
             sys.exit(1)
     class_bytype[args.stype](args).do_find()
 
