@@ -1,7 +1,7 @@
 ifeq ($(GOROOT),)
 $(error GOROOT environment var must be set)
 endif
-include $(GOROOT)/src/Make.inc
+include $(GOROOT)/src/Make.dist
 
 SRCS=$(wildcard *.go)
 TARGETS_AUTO=$(SRCS:.go=)
