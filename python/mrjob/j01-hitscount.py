@@ -3,7 +3,7 @@ from mrjob.job import MRJob
 
 class MRHitCount(MRJob):
     def mapper(self, _, line):
-        ip, path = split(line)
+        ip, path = line.split()
         yield path, 1
 
     def reducer(self, key, values):
