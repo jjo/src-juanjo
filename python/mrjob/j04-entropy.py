@@ -7,14 +7,14 @@
 #
 #
 """
-Sort urlpaths from an httpd logfile with <ip, urlpath> lines,
-by entropy of clients' IPs aggregated altogether (bitwise)"
-Q&D shell 1liner to split an apache.log:
-  sed -rn 's/(\S+).*GET (\S+).*/\1 \2/p' apache.log |split -l 1000 - outlog-
+Sort urlpaths from an apache logfile by entropy of
+clients' IPs (bitwise) aggregated altogether, to
+get an approximation of clients' diversity
 """
 from mrjob.job import MRJob
 import math
 import socket
+import re
 
 
 def entropy(string):
@@ -27,26 +27,38 @@ def entropy(string):
     return entropy_val
 
 
+def entropy_bits(ips):
+    "entropy from concatenated bits for each ipv4"
+    return entropy("".join(safe_inet_aton(x) for x in ips))
+
+
+def safe_inet_aton(ip):
+    "inet_aton() with an exception wrapper"
+    try:
+        return socket.inet_aton(ip)
+    except socket.error:
+        return ""
+
+
 class MREntropyPerURL(MRJob):
-    """From (ip, url) input lines, output (entropy_val, (urls...)),
+    """From apache.log input lines, output (entropy_val, (urls...)),
        where entropy is the Shannon entropy value of the concatenation
        of all 32bits ips by url"""
 
+    # 1st MR: urlpath -> entropy([ips])
     def input_mapper(self, _, line):
-        "split line as urlpath, ip"
-        ip, path = line.split()
-        yield path, ip
+        "get path, ip from apache logline"
+        #ip, path = line.split()
+        match = re.match(r'([(\d\.)]+).*GET ([^\s?]+)', line)
+        if match:
+            ip, path = match.groups()
+            yield path, ip
 
     def urlpath_to_entropy(self, key, values):
         "calculate the entropy of all bits from the aggregation of 32bits IPs"
-        ip_bits = ""
-        for ip in values:
-            try:
-                ip_bits += socket.inet_aton(ip)
-            except socket.error:
-                continue
-        yield key, str(entropy(ip_bits))
+        yield key, entropy_bits(values)
 
+    # 2nd MR: aggregate all urlpaths by same entropy_val
     def swap_values(self, key, value):
         "swap key,value to get output aggregated by entropy_val"
         yield value, key
