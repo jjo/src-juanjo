@@ -7,6 +7,13 @@
 # License: GPLv3
 #
 
+# Print (return) all environments
+# - requires python-yaml
+_juju_environments() {
+  local f="${JUJU_HOME:-$HOME/.juju}/environments.yaml"
+  env f="$f" python -c 'import yaml, os;print "\n".join(yaml.safe_load(open(os.environ["f"]))["environments"].keys())'
+}
+
 # Print (return) all machines
 _juju_machines_from_file() {
 python -c '
@@ -69,6 +76,7 @@ _juju_completion_func_for_cmd() {
         *\<unit*|*juju?ssh*|*juju?scp*)    echo _juju_units_from_file;;
         *\<service*)    echo _juju_services_from_file;;
         *\<machine*)    echo _juju_machines_from_file;;
+        *environment*)    echo _juju_environments;;
         *pattern*)      echo _juju_services_and_units_from_file;; # e.g. status
         ?*)     echo true ;;  # help ok, existing command, no more expansion
         *)      echo false;;  # failed, not a command

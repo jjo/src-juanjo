@@ -1,0 +1,6 @@
+[submodule "tlng/um-cloud"]
+	path = tlng/um-cloud
+	url = git://github.com/tlng/um-cloud
+[submodule "um-cloud"]
+	path = um-cloud
+	url = git@github.com:tlng/um-cloud.git
