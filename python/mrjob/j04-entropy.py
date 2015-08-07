@@ -29,7 +29,7 @@ def entropy(string):
 
 def entropy_bits(ips):
     "entropy from concatenated bits for each ipv4"
-    return entropy("".join(safe_inet_aton(x) for x in ips))
+    return round(entropy("".join(safe_inet_aton(x) for x in ips)), 4)
 
 
 def safe_inet_aton(ip):
@@ -48,14 +48,13 @@ class MREntropyPerURL(MRJob):
     # 1st MR: urlpath -> entropy([ips])
     def input_mapper(self, _, line):
         "get path, ip from apache logline"
-        #ip, path = line.split()
-        match = re.match(r'([(\d\.)]+).*GET ([^\s?]+)', line)
+        match = re.match(r'^(\S+).*GET ([^\s?]+)', line)
         if match:
             ip, path = match.groups()
             yield path, ip
 
     def urlpath_to_entropy(self, key, values):
-        "calculate the entropy of all bits from the aggregation of 32bits IPs"
+        "calculate the entropy of all bits from the concat of client IPs/names"
         yield key, entropy_bits(values)
 
     # 2nd MR: aggregate all urlpaths by same entropy_val

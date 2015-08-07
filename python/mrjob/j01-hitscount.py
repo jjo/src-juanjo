@@ -1,10 +1,13 @@
 #!/usr/bin/python
 from mrjob.job import MRJob
+import re
 
 class MRHitCount(MRJob):
     def mapper(self, _, line):
-        ip, path = line.split()
-        yield path, 1
+        match = re.match(r'^(\S+).*GET ([^\s?]+)', line)
+        if match:
+            ip, path = match.groups()
+            yield path, 1
 
     def reducer(self, key, values):
         yield key, sum(values)
