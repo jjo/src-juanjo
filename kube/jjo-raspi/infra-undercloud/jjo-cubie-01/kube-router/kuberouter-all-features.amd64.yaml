@@ -1,0 +1,127 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: kube-router
+    tier: node-amd64
+  name: kube-router-amd64
+  namespace: kube-system
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: kube-router
+      tier: node-amd64
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      creationTimestamp: null
+      labels:
+        k8s-app: kube-router
+        tier: node-amd64
+    spec:
+      containers:
+      - args:
+        - --run-router=true
+        - --run-firewall=true
+        - --run-service-proxy=true
+        - --advertise-external-ip=true
+        - --advertise-loadbalancer-ip=true
+        - --kubeconfig=/var/lib/kube-router/kubeconfig
+        - --peer-router-ips=192.168.185.1
+        - --peer-router-asns=64512
+        - --v=2
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: cloudnativelabs/kube-router:v0.2.4
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 20244
+            scheme: HTTP
+          initialDelaySeconds: 310
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: kube-router
+        resources:
+          requests:
+            cpu: 250m
+            memory: 250Mi
+        securityContext:
+          privileged: true
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: lib-modules
+          readOnly: true
+        - mountPath: /etc/cni/net.d
+          name: cni-conf-dir
+        - mountPath: /var/lib/kube-router
+          name: kubeconfig
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      initContainers:
+      - command:
+        - /bin/sh
+        - -c
+        - set -e -x; if [ ! -f /etc/cni/net.d/10-kuberouter.conf ]; then TMP=/etc/cni/net.d/.tmp-kuberouter-cfg;
+          cp /etc/kube-router/cni-conf.json ${TMP}; mv ${TMP} /etc/cni/net.d/10-kuberouter.conf;
+          fi
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        name: install-cni
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/cni/net.d
+          name: cni-conf-dir
+        - mountPath: /etc/kube-router
+          name: kube-router-cfg
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: kube-router
+      serviceAccountName: kube-router
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: ""
+        name: lib-modules
+      - hostPath:
+          path: /etc/cni/net.d
+          type: ""
+        name: cni-conf-dir
+      - configMap:
+          defaultMode: 420
+          name: kube-router-cfg
+        name: kube-router-cfg
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: kubeconfig.conf
+            path: kubeconfig
+          name: kube-proxy
+        name: kubeconfig
+  updateStrategy:
+    type: OnDelete
