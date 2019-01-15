@@ -1,0 +1,29 @@
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: v1.13.1
+apiServer:
+  certSANs:
+  - jjo-raspi.kube.jjo.com.ar
+  - 192.168.100.196
+  - 192.168.185.1
+  - 192.168.185.32
+  - 192.168.185.33
+  - 192.168.185.34
+  extraArgs:
+    authorization-mode: Node,RBAC
+  timeoutForControlPlane: 10m0s
+controlPlaneEndpoint: "192.168.185.1:6443"
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controllerManager: {}
+dns:
+  type: CoreDNS
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: k8s.gcr.io
+networking:
+  dnsDomain: cluster.local
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
